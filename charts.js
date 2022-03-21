@@ -52,81 +52,82 @@ function buildMetadata(sample) {
 
   });
 }
-//DELIVERABLE 1: Horizontal Bar Chart
+
 // 1. Create the buildCharts function.
 function buildCharts(sample) {
   // 2. Use d3.json to load and retrieve the samples.json file 
   d3.json("samples.json").then((data) => {
     // 3. Create a variable that holds the samples array. 
-    console.log(data);
-    var samplesArray = data.samples;
-    console.log(samplesArray);
+    var samples = data.samples;
     // 4. Create a variable that filters the samples for the object with the desired sample number.
-    var selectedIdSamples = samplesArray.filter(data => data.id == sample);
-    console.log(selectedIdSamples);
-    //  5. Create a variable that holds the first sample in the array.
-    var firstSample = selectedIdSamples[0];
-    console.log(firstSample);
+        var filteredSamples = samples.filter(sampleObj => sampleObj.id == sample);
+    // 5. Create a variable that holds the first sample in the array.
+        var firstSamples  = filteredSamples[0];
 
     // 6. Create variables that hold the otu_ids, otu_labels, and sample_values.
-    var otuIds = firstSample.otu_ids;
-    var otuLabels = firstSample.otu_labels;
-    var sampleValues = firstSample.sample_values;
-    console.log(otuIds);
-    console.log(otuLabels);
-  
-    console.log(sampleValues);
+    var otuID = firstSamples.otu_ids;
+    var otuLabels = firstSamples.otu_labels.slice(0,10);
+    var sampleValues = firstSamples.sample_values.slice(0,10);
 
     // 7. Create the yticks for the bar chart.
     // Hint: Get the the top 10 otu_ids and map them in descending order  
     //  so the otu_ids with the most bacteria are last. 
-    var xticks = sample_values.slice(0, 10).reverse();
-    var yticks = otuIds.slice(0,10).map(id => "OTU " + id).reverse();
-    console.log(yticks);
+    var xticks = sampleValues.slice(0,10).reverse();
+    var yticks = otuID.slice(0,10).map((id) => "OTU " + id);
+   
 
     // 8. Create the trace for the bar chart. 
     var barData = {
       x: xticks,
       y: yticks,
-      text: otu_labels,
-      type: 'bar',
-      orientation: 'h'
+      hoverinfo: otuLabels,
+      type: "bar",
+      orientation: "h",
     };
-
+    
     // 9. Create the layout for the bar chart. 
     var barLayout = {
       title: "Top 10 Bacteria Cultures Found"
-    };
+      };
+
     // 10. Use Plotly to plot the data with the layout. 
-    Plotly.newPlot("bar", barData, barLayout);
+    Plotly.newPlot("bar", [barData], barLayout);
 
-//DELIVERABLE 2: Bubble chart
-    // 1. Create the trace for the bubble chart.
-var bubbleTrace = {
-  x: otuIds,
+
+
+
+// Deliverable # 2: Create a Bubble Chart //
+ // 1. Create the trace for the bubble chart.
+ var bubbleData = {
+  x: otuID,
   y: sampleValues,
+  type: "bubble",
   text: otuLabels,
-  mode: 'markers',
-  marker: {
-    size: sampleValues,
-    color: otuIds,
-    colorscale: "Earth"
-  }
+  hoverinfo: "x+y+text",
+  mode: "markers",
+  marker: {size: sampleValues, color: otuID, colorscale: "Earth"}
 };
-console.log(bubbleTrace);
-
+     
 // 2. Create the layout for the bubble chart.
 var bubbleLayout = {
-  title: 'Bacteria Cultures Per Sample',
-  showlegend: false,
-  xaxis: {title: "OTU ID", automargin: true},
-  yaxis: {automargin: true},
-  //margin: { t: 50, r: 50, l: 50, b: 50 },
+  title: {
+    text: "<b>Bacteria Cultures Per Sample</b>",
+    
+  },
+  xaxis: {title: "OTU ID"},
+  margin: {
+    l: 70,
+    r: 55,
+    b: 62,
+    t: 68,
+    pad: 12
+  },
   hovermode: "closest"
 };
 
 // 3. Use Plotly to plot the data with the layout.
-Plotly.newPlot("bubble", bubbleTrace, bubbleLayout);
+Plotly.newPlot("bubble", [bubbleData], bubbleLayout);
+
 
 // DELIVERABLE 3: Gauge Chart
 // 1. Create a variable that filters the metadata array for the object with the desired sample number.
@@ -168,6 +169,6 @@ var gaugeLayout = {
   width: 500, height: 400, margin: { t: 0, b: 0 } };
 
 // 6. Use Plotly to plot the gauge data and layout.
-Plotly.newPlot("gauge", gaugeData, gaugeLayout, {responsive: true});
+Plotly.newPlot("gauge", gaugeData, gaugeLayout);
 });
 }
